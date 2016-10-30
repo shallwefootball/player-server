@@ -1,6 +1,7 @@
 const LocalStrategy  = require('passport-local').Strategy
 const bcrypt = require('bcryptjs')
 const userModel = require('./model/user')
+const MESSAGE = require('./message')
 
 
 module.exports = passport => {
@@ -25,7 +26,7 @@ module.exports = passport => {
         if(user) {
           if(!bcrypt.compareSync(password, user.password)){
             console.log("비번틀림......");
-            return done(null, false, req.flash('loginMessage', '비밀번호가 틀렸어,, 알지???'));
+            return done(null, false, req.flash('loginMessage', MESSAGE.WRONG_PASSWORD));
           } else {
 
             // console.log('local-login  user       : ', user);
@@ -34,7 +35,7 @@ module.exports = passport => {
 
         }else {
           console.log('선수 못찾음...');
-          return done(null, false, req.flash('loginMessage', '선수를 찾지못했어. 등록안했지?'));
+          return done(null, false, req.flash('loginMessage', MESSAGE.CANT_FIND_USER));
         }
 
       })
