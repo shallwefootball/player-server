@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const passport = require('passport')
 const cors = require('cors')
 const auth = require('./auth')
+const sLogger = require('./logger')
 
 const app = express()
 app.use(cors());

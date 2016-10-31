@@ -1,14 +1,14 @@
 const LocalStrategy  = require('passport-local').Strategy
 const bcrypt = require('bcryptjs')
-const userModel = require('./model/user')
-const MESSAGE = require('./message')
 
+const logger = require('./logger')
+const userModel = require('./model/user')
+const CONSTRAINT = require('./constraint')
 
 module.exports = passport => {
 
   passport.serializeUser((user, done) => {
 
-    console.log('serializeUser  : ', user)
     done(null, user.email);
   });
 
@@ -25,21 +25,18 @@ module.exports = passport => {
 
         if(user) {
           if(!bcrypt.compareSync(password, user.password)){
-            console.log("비번틀림......");
-            return done(null, false, { message: MESSAGE.WRONG_PASSWORD });
+            return done(null, false, { message: CONSTRAINT.WRONG_PASSWORD });
           } else {
 
-            // console.log('local-login  user       : ', user);
+            logger.read(user.playerName + '님의 로그인.', {user: user, type: CONSTRAINT.LOG_TYPE_LOGIN})
             return done(null, user);
           }
 
         }else {
-          console.log('선수 못찾음...');
-          return done(null, false, { message: MESSAGE.CANT_FIND_USER });
+          return done(null, false, { message: CONSTRAINT.CANT_FIND_USER });
         }
 
       })
 
   }))
 }
-
