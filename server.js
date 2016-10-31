@@ -5,6 +5,7 @@ const passport = require('passport')
 const cors = require('cors')
 const auth = require('./auth')
 const sLogger = require('./logger')
+const route = require('./route')
 
 const app = express()
 app.use(cors());
@@ -18,28 +19,7 @@ app.use(passport.session({
 }));
 auth(passport)
 
-app.post('/login', (req, res, next) => {
-
-  passport.authenticate('local-login', (err, user, info) => {
-    if (err) { return next(err) }
-    if (!user) {
-      return res.json({login: false, message: info.message})
-    }
-    req.logIn(user, err => {
-      if (err) { return next(err) }
-
-      return res.json({login: true})
-    });
-  })(req, res, next)
-})
-
-
-
-  // passport.authenticate('local-login', {
-  //   successRedirect: '/',
-  //   failureRedirect: '/login',
-  //   failureFlash: true
-  // })(req, res, next)
+app.use(route)
 
 
 const server = app.listen(4000, function () {
