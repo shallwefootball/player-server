@@ -21,6 +21,17 @@ exports.select = leagueId => {
         where m.homeClubId = c.clubId
       )
       homeClubName,
+      (
+        select (
+          select (
+            select fileName from teamImage ti where ti.teamId = t.teamId
+          )
+          from team t
+          where t.teamId = c.teamId
+        )
+        from club c
+        where m.homeClubId = c.clubId
+      )homeImageS,
       m.awayClubId,
       (
         select (select teamName from team t where t.teamId = c.teamId)teamName
@@ -36,7 +47,18 @@ exports.select = leagueId => {
       awayTeamId,
       if (
         m.kickoffTime < now() and isnull(m.homeScore), 0, m.homeScore
-      )
+      ),
+      (
+        select (
+          select (
+            select fileName from teamImage ti where ti.teamId = t.teamId
+          )
+          from team t
+          where t.teamId = c.teamId
+        )
+        from club c
+        where m.awayClubId = c.clubId
+      )awayImageS,
       homeScore,
       if (
         m.kickoffTime < now() and isnull(m.awayScore), 0, m.awayScore
