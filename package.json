@@ -12,8 +12,10 @@
   "dependencies": {
     "bcryptjs": "^2.3.0",
     "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
     "cors": "^2.8.1",
     "express": "^4.14.0",
+    "express-session": "^1.14.2",
     "morgan": "^1.7.0",
     "mysql": "^2.11.1",
     "node-uuid": "^1.4.7",

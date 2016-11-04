@@ -12,6 +12,13 @@ module.exports = passport => {
     done(null, user.email);
   });
 
+  passport.deserializeUser((id, done) => {
+    console.log('deserializeUser  : ', id);
+    // User.findById(id, function(err, user) {
+      done(err, id);
+    // });
+  });
+
   passport.use('local-login', new LocalStrategy({
     //input name
     usernameField     : 'email',

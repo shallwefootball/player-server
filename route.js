@@ -10,12 +10,15 @@ module.exports = Route
     passport.authenticate('local-login', (err, user, info) => {
       if (err) { return next(err) }
       if (!user) {
-        return res.json({login: false, message: info.message})
+        res.json({login: false, message: info.message})
       }
       req.logIn(user, err => {
         if (err) { return next(err) }
 
-        return res.json({login: true})
+        res.json({
+          userId: req.user.userId,
+          login: true,
+        })
       });
     })(req, res, next)
   })

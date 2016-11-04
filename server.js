@@ -3,6 +3,9 @@ const logger = require('morgan');
 const bodyParser = require('body-parser')
 const passport = require('passport')
 const cors = require('cors')
+const cookieParser = require('cookie-parser')
+const session = require('express-session')
+
 const auth = require('./auth')
 const sLogger = require('./logger')
 const route = require('./route')
@@ -10,8 +13,12 @@ const route = require('./route')
 const app = express()
 app.use(cors());
 app.use(logger('dev'))
+
+app.use(cookieParser());
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use(session({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
+
 app.use(express.static(__dirname + '/image'))
 
 app.use(passport.initialize())
