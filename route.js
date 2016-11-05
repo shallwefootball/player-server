@@ -2,6 +2,7 @@ const express = require('express')
 const Route = express.Router()
 const passport = require('passport')
 const leagueModel = require('./model/league')
+const teamModel = require('./model/team')
 const matchModel = require('./model/match')
 
 module.exports = Route
@@ -29,7 +30,13 @@ module.exports = Route
   })
   .get('/league/:leagueId', (req, res) => {
     matchModel.select(req.params.leagueId)
-    .then(matches => {
-      return res.json({matches: matches})
-    })
+      .then(matches => {
+        return res.json({matches: matches})
+      })
+  })
+  .get('/team', (req, res) => {
+    teamModel.select()
+      .then(teams => {
+        return res.json({teams: teams})
+      })
   })
