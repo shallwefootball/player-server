@@ -67,7 +67,8 @@ exports.select = leagueId => {
       m.leagueId,
       m.stadium,
       m.note,
-      m.link
+      m.link,
+      m.friendlyMatchId
     from \`match\` m, ( SELECT @RNUM := 0 ) R
     where m.leagueId = ? order by kickoffTime`,
     leagueId
