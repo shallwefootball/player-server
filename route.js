@@ -29,14 +29,26 @@ module.exports = Route
     })
   })
   .get('/league/:leagueId', (req, res) => {
-    matchModel.select(req.params.leagueId)
+    matchModel.selectLeague(req.params.leagueId)
       .then(matches => {
         return res.json({matches: matches})
       })
   })
-  .get('/team', (req, res) => {
+  .get('/teams', (req, res) => {
     teamModel.select()
       .then(teams => {
         return res.json({teams: teams})
+      })
+  })
+  .get('/team/:teamId', (req, res) => {
+    teamModel.selectOne(req.params.teamId)
+      .then(team => {
+        return res.json({team: team})
+      })
+  })
+  .get('/will-match/:teamId', (req, res) => {
+    matchModel.selectWill(req.params.teamId)
+      .then(matches => {
+        return res.json({matches: matches})
       })
   })
