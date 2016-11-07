@@ -4,6 +4,7 @@ const passport = require('passport')
 const leagueModel = require('./model/league')
 const teamModel = require('./model/team')
 const matchModel = require('./model/match')
+const clubModel = require('./model/club')
 
 module.exports = Route
   .post('/login', (req, res, next) => {
@@ -50,5 +51,11 @@ module.exports = Route
     matchModel.selectWill(req.params.teamId)
       .then(matches => {
         return res.json({matches: matches})
+      })
+  })
+  .get('/clubs/:leagueId', (req, res) => {
+    clubModel.select(req.params.leagueId)
+      .then(clubs => {
+        return res.json({clubs: clubs})
       })
   })

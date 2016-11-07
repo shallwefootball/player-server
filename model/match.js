@@ -93,8 +93,8 @@ exports.selectLeague = leagueId => {
  * @param {int} teamId
  */
 exports.selectWill = teamId => {
-  return conn(
-    `select
+  return conn(`
+    select
       concat("#", @RNUM := @RNUM + 1) AS rownum,
       m.matchId,
       m.matchName,
