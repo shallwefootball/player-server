@@ -1,0 +1,11 @@
+{
+  "source": {
+    "include": [
+      "./model/match.js"
+    ]
+  },
+  "opts": {
+    "recurse": true,
+    "destination": "./docs/"
+  }
+}
