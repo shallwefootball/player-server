@@ -10,7 +10,7 @@ exports.select = () => {
 
 
 /**
- * teadId로 팀의 정보를 가져옵니다.
+ * deprecated - clubId로 팀의 정보를 가져옵니다.
  * @param {int} clubId
  */
 exports.selectOne = clubId => {
@@ -23,5 +23,4 @@ exports.selectOne = clubId => {
     .then(club => {
       return club[0]
     })
-
 }

@@ -43,10 +43,10 @@ module.exports = Route
         return res.json({teams: teams})
       })
   })
-  .get('/team/:clubId', (req, res) => {
-    teamModel.selectOne(req.params.clubId)
-      .then(team => {
-        return res.json({team: team})
+  .get('/club/:clubId', (req, res) => {
+    clubModel.selectOne(req.params.clubId)
+      .then(club => {
+        return res.json({club: club})
       })
   })
   .get('/will-match/:clubId', (req, res) => {
