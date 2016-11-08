@@ -5,6 +5,7 @@ const leagueModel = require('./model/league')
 const teamModel = require('./model/team')
 const matchModel = require('./model/match')
 const clubModel = require('./model/club')
+const playerModel = require('./model/player')
 
 module.exports = Route
   .post('/login', (req, res, next) => {
@@ -57,5 +58,11 @@ module.exports = Route
     clubModel.select(req.params.leagueId)
       .then(clubs => {
         return res.json({clubs: clubs})
+      })
+  })
+  .get('/players/:clubId', (req, res) => {
+    playerModel.selectClubId(req.params.clubId)
+      .then(players => {
+        return res.json({players: players})
       })
   })
