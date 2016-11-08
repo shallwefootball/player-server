@@ -41,14 +41,14 @@ module.exports = Route
         return res.json({teams: teams})
       })
   })
-  .get('/team/:teamId', (req, res) => {
-    teamModel.selectOne(req.params.teamId)
+  .get('/team/:clubId', (req, res) => {
+    teamModel.selectOne(req.params.clubId)
       .then(team => {
         return res.json({team: team})
       })
   })
-  .get('/will-match/:teamId', (req, res) => {
-    matchModel.selectWill(req.params.teamId)
+  .get('/will-match/:clubId', (req, res) => {
+    matchModel.selectWill(req.params.clubId)
       .then(matches => {
         return res.json({matches: matches})
       })

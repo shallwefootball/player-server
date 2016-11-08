@@ -11,16 +11,17 @@ exports.select = () => {
 
 /**
  * teadId로 팀의 정보를 가져옵니다.
- * @param {int} teamId
+ * @param {int} clubId
  */
-exports.selectOne = teamId => {
+exports.selectOne = clubId => {
   return conn(`
-      select * from team t where t.teamId = ?
+      select * from club c join team t on c.teamId = t.teamId
+      where c.clubId = ?;
     `,
-    teamId
+    clubId
   )
-    .then(team => {
-      return team[0]
+    .then(club => {
+      return club[0]
     })
 
 }

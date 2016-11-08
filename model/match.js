@@ -92,7 +92,7 @@ exports.selectLeague = leagueId => {
  * teamId로 해당하는 팀의 경기중 진행해야하는 경기를 가져옵니다.
  * @param {int} teamId
  */
-exports.selectWill = teamId => {
+exports.selectWill = clubId => {
   return conn(`
     select
       concat("#", @RNUM := @RNUM + 1) AS rownum,
@@ -159,20 +159,7 @@ exports.selectWill = teamId => {
     from \`match\` m, ( SELECT @RNUM := 0 ) R
     where homeScore is null
     and awayScore is null
-    and
-      (
-        (
-           select (select teamId from team t where t.teamId = c.teamId)teamName
-          from club c
-          where m.homeClubId = c.clubId
-        ) = ?
-    or
-        (
-          select (select teamId from team t where t.teamId = c.teamId)teamName
-          from club c
-          where m.awayClubId = c.clubId
-        ) = ?
-    );`,
-    [teamId, teamId]
+    and (homeClubId = ? or awayClubId = ?)`,
+    [clubId, clubId]
   )
 }
