@@ -26,9 +26,10 @@ module.exports = Route
     })(req, res, next)
   })
   .get('/league', (req, res) => {
-    leagueModel.select().then(leagues => {
-      return res.json({leagues: leagues})
-    })
+    leagueModel.select()
+      .then(leagues => {
+        return res.json({leagues: leagues})
+      })
   })
   .get('/league/:leagueId', (req, res) => {
     matchModel.selectLeague(req.params.leagueId)
