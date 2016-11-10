@@ -7,6 +7,7 @@ const matchModel = require('./model/match')
 const clubModel = require('./model/club')
 const playerModel = require('./model/player')
 const recordModel = require('./model/record')
+const lineupModel = require('./model/lineup')
 
 module.exports = Route
   .post('/login', (req, res, next) => {
@@ -50,9 +51,11 @@ module.exports = Route
         return res.json({club: club})
       })
   })
-  .get('/will-match/:clubId', (req, res) => {
-    matchModel.selectWill(req.params.clubId)
+  .get('/will-match/:leagueId/:clubId', (req, res) => {
+    console.log('req.params : ', req.params)
+    matchModel.selectWill(req.params.leagueId, req.params.clubId)
       .then(matches => {
+        console.log('matches  : ', matches)
         return res.json({matches: matches})
       })
   })
@@ -88,6 +91,13 @@ module.exports = Route
   })
   .put('/players', (req, res) => {
     playerModel.update(req.body.clubId, req.body.players)
+      .then(() => {
+        return res.json({message: 'success'})
+      })
+  })
+  .post('/lineup', (req, res) => {
+    console.log('req.body  : ', req.body)
+    lineupModel.insert(req.body.matchId, req.body.players)
       .then(() => {
         return res.json({message: 'success'})
       })

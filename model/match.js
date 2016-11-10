@@ -90,77 +90,32 @@ exports.selectLeague = leagueId => {
 
 /**
  * teamId로 해당하는 팀의 경기중 진행해야하는 경기를 가져옵니다.
- * @param {int} teamId
+ * @param {int} leagueId
+ * @param {int} clubId
  */
-exports.selectWill = clubId => {
+exports.selectWill = (leagueId, clubId) => {
   return conn(`
-    select
-      concat("#", @RNUM := @RNUM + 1) AS rownum,
-      m.matchId,
-      m.matchName,
-      m.kickoffTime,
-      m.homeClubId,
-      (
-        select (select teamId from team t where t.teamId = c.teamId)teamName
-        from club c
-        where m.homeClubId = c.clubId
-      )
-      homeTeamId,
-      (
-        select (select teamName from team t where t.teamId = c.teamId)teamName
-        from club c
-        where m.homeClubId = c.clubId
-      )
-      homeClubName,
-      (
-        select (
-          select (
-            select fileName from teamImage ti where ti.teamId = t.teamId
-          )
-          from team t
-          where t.teamId = c.teamId
-        )
-        from club c
-        where m.homeClubId = c.clubId
-      )
-      homeImageS,
-      m.awayClubId,
-      (
-        select (select teamName from team t where t.teamId = c.teamId)teamName
-        from club c
-        where m.awayClubId = c.clubId
-      )
-      awayClubName,
-      (
-        select (select teamId from team t where t.teamId = c.teamId)teamName
-        from club c
-        where m.awayClubId = c.clubId
-      )
-      awayTeamId,
-      (
-        select (
-          select (
-            select fileName from teamImage ti where ti.teamId = t.teamId
-          )
-          from team t
-          where t.teamId = c.teamId
-        )
-        from club c
-        where m.awayClubId = c.clubId
-      )
-      awayImageS,
-      m.homeScore,
-      m.awayScore,
-      m.leagueId,
-      m.stadium,
-      m.note,
-      m.link,
-      m.friendlyMatchId
-    from \`match\` m, ( SELECT @RNUM := 0 ) R
-    where homeScore is null
-    and awayScore is null
-    and (homeClubId = ? or awayClubId = ?)`,
-    [clubId, clubId]
+      select
+        m.matchId,
+          m.matchName,
+        l.community,
+        l.season,
+          m.kickoffTime,
+        m.homeClubId,
+        (select (select teamName from team t where t.teamId = c.teamId)teamName from club c where m.homeClubId = c.clubId)homeClubName,
+        m.awayClubId,
+        (select (select teamName from team t where t.teamId = c.teamId)teamName from club c where m.awayClubId = c.clubId)awayClubName,
+        note
+      from \`match\` m, league l
+      where (m.homeClubId = ? or m.awayClubId = ?)
+        and m.leagueId = l.leagueId
+        and m.matchId not in
+          (select m.matchId from lineup l, \`match\` m, player p where l.playerId = p.playerId and l.matchId = m.matchId and p.clubId = ?)
+        and l.leagueId = ?
+        and m.note is null
+      order by kickoffTime
+    `,
+    [clubId, clubId, clubId, leagueId]
   )
 }
 
