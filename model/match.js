@@ -171,6 +171,7 @@ exports.selectWill = clubId => {
 exports.selectOne = matchId => {
   return conn(
     `select
+      m.matchId,
       m.matchName,
       year(m.kickoffTime) year,
       month(m.kickoffTime) month,
