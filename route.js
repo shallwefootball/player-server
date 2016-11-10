@@ -67,3 +67,9 @@ module.exports = Route
         return res.json({players: players})
       })
   })
+  .get('/match/:matchId', (req, res) => {
+    matchModel.selectOne(req.params.matchId)
+      .then(match => {
+        return res.json({match: match})
+      })
+  })
