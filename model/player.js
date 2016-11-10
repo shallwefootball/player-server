@@ -54,3 +54,16 @@ exports.selectMatchClub = (matchId, clubId) => {
     order by orderNumber`,
   [matchId, clubId])
 }
+
+exports.update = (clubId, players) => {
+
+  return Promise.all(players.map(player => {
+    return conn(`
+      update player set matchPosition = ?, orderNumber = ?, status = ? where squadNumber = ? and clubId = ?`,
+      [player.matchPosition, player.orderNumber, player.status, player.squadNumber, clubId]
+    )
+  }))
+  .then(values => {
+    return values
+  })
+}

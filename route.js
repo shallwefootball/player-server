@@ -86,3 +86,9 @@ module.exports = Route
         return res.json({records: records})
       })
   })
+  .put('/players', (req, res) => {
+    playerModel.update(req.body.clubId, req.body.players)
+      .then(() => {
+        return res.json({message: 'success'})
+      })
+  })
