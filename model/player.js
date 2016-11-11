@@ -9,7 +9,7 @@ const conn = require('./conn')
  * clubId로 선수들의 정보를 가져옵니다.
  * @param {int} clubId
  */
-exports.selectClubId = clubId => {
+exports.selectClub = clubId => {
 
   return conn(`
     select
@@ -66,4 +66,27 @@ exports.update = (clubId, players) => {
   .then(values => {
     return values
   })
+}
+
+/**
+ * userId, leagueId로 한선수가 리그의 선수을 리턴합니다.
+ * @param {int} userId
+ * @param {int} leagueId
+ */
+exports.selectOneUserLeague = (userId, leagueId) => {
+  return conn(`
+    select * from player p
+    join club c on p.clubId = c.clubId
+    where p.userId = ?
+      and c.leagueId = ?`,
+  [userId, leagueId])
+  .then(players => {
+    return players[0]
+  })
+}
+
+exports.insert = ({userId, clubId, squadNumber, position, orderNumber}) => {
+  return conn(`
+    insert into player (userId, clubId, squadNumber, position, orderNumber) values (?, ?, ?, ?, ?)`,
+    [userId, clubId, squadNumber, position, orderNumber])
 }

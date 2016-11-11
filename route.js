@@ -65,7 +65,7 @@ module.exports = Route
       })
   })
   .get('/players/:clubId', (req, res) => {
-    playerModel.selectClubId(req.params.clubId)
+    playerModel.selectClub(req.params.clubId)
       .then(players => {
         return res.json({players: players})
       })
@@ -101,9 +101,46 @@ module.exports = Route
       })
   })
   .get('/users/:char', (req, res) => {
-    console.log('req.params.char  : ', req.params.char)
     userModel.selectChar(req.params.char)
       .then(users => {
         return res.json({users: users})
       })
+  })
+  .post('/player', (req, res) => {
+
+    const { userId, leagueId, clubId } = req.body
+
+    return Promise.all([
+      playerModel.selectOneUserLeague(userId, leagueId),
+      playerModel.selectClub(clubId)
+    ]).then(values => {
+      let player = values[0]
+      const players = values[1]
+
+      //만약에 leagueId에 해당하는 리그에 등록이 안된 플레이어는 random positon
+      const positions = ['DF', 'MF', 'FW']
+      const index = (Math.random() * (positions.length - 1)).toFixed()
+      if(!player) player = {
+        squadNumber: (Math.random() * 100).toFixed(),
+        position: positions[index]
+      }
+
+      const lastPlayer = players.pop()
+      const nextOrderNumber = lastPlayer ? (lastPlayer.orderNumber + 1) : 0
+
+      const newPlayer = {
+        userId,
+        clubId,
+        squadNumber: player.squadNumber,
+        position: player.position,
+        orderNumber: nextOrderNumber
+      }
+      return newPlayer
+    })
+    .then(player => (playerModel.insert(player)))
+    .then(() => (playerModel.selectClub(clubId)))
+    .then(players => {
+      return res.json({players: players})
+    })
+
   })
