@@ -23,3 +23,9 @@ exports.select = matchId => {
     order by minutes desc, recordId desc`,
   matchId)
 }
+
+exports.insert = ({recordName, time, minutes, lineupId}) => {
+  return conn(`insert into record(recordName, time, minutes, lineupId) values(?, ?, ?, ?)`,
+    [recordName, time, minutes, lineupId]
+  )
+}

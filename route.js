@@ -77,7 +77,7 @@ module.exports = Route
       })
   })
   .get('/players/:matchId/:clubId', (req, res) => {
-    playerModel.selectMatchClub(req.params.matchId, req.params.clubId)
+    lineupModel.selectMatchClub(req.params.matchId, req.params.clubId)
       .then(players => {
         return res.json({players: players})
       })
