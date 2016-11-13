@@ -151,3 +151,9 @@ module.exports = Route
         res.json({message: 'success'})
       })
   })
+  .delete('/record/:recordId', (req, res) => {
+    recordModel.delete(req.params.recordId)
+      .then(() => {
+        res.json({message: 'success'})
+      })
+  })

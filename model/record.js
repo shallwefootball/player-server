@@ -29,3 +29,10 @@ exports.insert = ({recordName, time, minutes, lineupId}) => {
     [recordName, time, minutes, lineupId]
   )
 }
+
+
+exports.delete = recordId => {
+  return conn(`delete from record where recordId = ?`,
+    recordId
+  )
+}
