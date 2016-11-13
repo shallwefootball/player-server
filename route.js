@@ -144,3 +144,10 @@ module.exports = Route
     })
 
   })
+  .post('/record', (req, res) => {
+    const { lineupId, time, minutes, recordName } = req.body
+    recordModel.insert({ lineupId, time, minutes, recordName })
+      .then(() => {
+        res.json({message: 'success'})
+      })
+  })
