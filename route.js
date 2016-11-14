@@ -145,11 +145,22 @@ module.exports = Route
 
   })
   .post('/record', (req, res) => {
-    const { lineupId, time, minutes, recordName } = req.body
-    recordModel.insert({ lineupId, time, minutes, recordName })
+    const { lineupId, time, minutes, recordName, subLineupId } = req.body
+
+    if(recordName == 'sub') {
+
+      //out first
+      recordModel.insert({ lineupId, time, minutes, recordName: 'out' })
+      .then(() => (recordModel.insert({ lineupId: subLineupId, time, minutes, recordName: 'in' })))
       .then(() => {
         res.json({message: 'success'})
       })
+    }else {
+      recordModel.insert({ lineupId, time, minutes, recordName })
+        .then(() => {
+          res.json({message: 'success'})
+        })
+    }
   })
   .delete('/record/:recordId', (req, res) => {
     recordModel.delete(req.params.recordId)
