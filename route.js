@@ -10,6 +10,8 @@ const recordModel = require('./model/record')
 const lineupModel = require('./model/lineup')
 const userModel = require('./model/user')
 
+const joinController = require('./controller/join')
+
 module.exports = Route
   .post('/login', (req, res, next) => {
 
@@ -168,3 +170,4 @@ module.exports = Route
         res.json({message: 'success'})
       })
   })
+  .post('/join', joinController)
