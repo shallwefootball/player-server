@@ -128,10 +128,7 @@ exports.selectOne = matchId => {
     `select
       m.matchId,
       m.matchName,
-      year(m.kickoffTime) year,
-      month(m.kickoffTime) month,
-      DAY(m.kickoffTime) day,
-      hour(m.kickoffTime) hour,
+      m.kickoffTime,
       m.stadium,
       hour(m.firstHalfTime) firstHalfHour,
       date_format(m.firstHalfTime, "%i") firstHalfMinute,
