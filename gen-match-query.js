@@ -66,6 +66,37 @@ const seqMatches = [
   [ 1013, 1009 ]
 ]
 
+const ableDays = [
+  '2017-03-04',
+  '2017-03-11',
+  '2017-03-18',
+  '2017-03-25',
+  '2017-04-01',
+  '2017-04-08',
+  '2017-04-15',
+  '2017-04-22',
+  '2017-04-29',
+  '2017-05-13',
+  '2017-05-20',
+  '2017-05-27',
+  '2017-06-10',
+  '2017-06-17',
+  '2017-06-24',
+  '2017-07-01',
+  '2017-07-08',
+  '2017-07-15',
+  '2017-08-19',
+  '2017-08-26',
+  '2017-09-02',
+  '2017-09-09',
+  '2017-09-16',
+  '2017-09-23',
+  '2017-09-30',
+  '2017-10-14',
+  '2017-10-21',
+  '2017-10-28'
+]
+
 const insertClub = temaIds => {
   return temaIds.map(teamId => {
     return `insert into club (teamId, formation, leagueId) values (${teamId}, '4-3-3', 2)`
@@ -73,28 +104,20 @@ const insertClub = temaIds => {
 }
 
 const insertMatch = seqMatches => {
-  return seqMatches.map(match => {
+  let k = 0
+  return seqMatches.map((matchTeam, index) => {
 
+    let kickoffTime = null
+
+    if (!(index % 2)) {
+      kickoffTime = moment(ableDays[k]).hours(19).format('YYYY-MM-DD HH:mm:ss')
+    }else {
+      kickoffTime = moment(ableDays[k]).hours(21).format('YYYY-MM-DD HH:mm:ss')
+      k++ // next matchday
+    }
+
+    return `insert into \`match\` (matchName, homeClubId, awayClubId, kickoffTime, leagueId) values (${index + 1}, ${matchTeam[0]}, ${matchTeam[1]}, ${kickoffTime}, 2)`
   })
 }
 
-
-// const fixWeekend = weeks.filter((weekend, i) => {
-//   return (i + 1) % 3
-// })
-
-// console.log('fixWeekend  : ', fixWeekend)
-
-// const insert = (matchId, players) => {
-
-//   return Promise.all(players.map(player => {
-//     return conn(`insert into lineup (playerId, matchId, matchPosition, status, orderNumber) values (?, ?, ?, ?, ?)`,
-//       [player.playerId, matchId, player.matchPosition, player.status, player.orderNumber]
-//     )
-//   }))
-//   .then(values => {
-//     return values
-//   })
-// }
-
-// console.log('seqMatch   ; ', seqMatch)
+// console.log("insertMatch  : ", insertMatch(seqMatches))
