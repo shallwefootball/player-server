@@ -36,3 +36,23 @@ exports.selectMatchClub = (matchId, clubId) => {
     order by orderNumber`,
   [matchId, clubId])
 }
+
+/**
+ * userId로 사용자 한명이 본인이 라인업으로 등록되었던 lineup정보를 전부 가져옵니다.
+ * @param {int} userId
+ */
+exports.selectUser = userId => {
+  return conn(`
+    select
+      l.status,
+      r.recordName,
+      m.matchId
+    from lineup l
+    join \`match\` m on m.matchId = l.matchId
+    join player p on p.playerId = l.playerId
+    left join record r on r.lineupId = l.lineupId
+    join \`user\` u on u.userId = p.userId
+    where u.userId = ?
+    order by kickoffTime`,
+  userId)
+}

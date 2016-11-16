@@ -4,10 +4,10 @@ const chance = new Chance()
 
 const config = require('../config')
 
-console.log('chance   : ', chance)
+// console.log('chance   : ', chance)
 
 module.exports = (req, res) => {
-  console.log('req : ', req.body)
+  // console.log('req : ', req.body)
   sendEmail({
     email: req.body.email,
     token: chance.hash()

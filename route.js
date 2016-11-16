@@ -11,6 +11,7 @@ const lineupModel = require('./model/lineup')
 const userModel = require('./model/user')
 
 const joinController = require('./controller/join')
+const statController = require('./controller/stat')
 
 module.exports = Route
   .post('/login', (req, res, next) => {
@@ -171,3 +172,4 @@ module.exports = Route
       })
   })
   .post('/join', joinController)
+  .get('/user-stat/:userId', statController.getUser)
