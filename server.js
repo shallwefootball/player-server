@@ -38,3 +38,5 @@ const server = app.listen(4000, function () {
 const SocketIo = require('socket.io')
 const io = new SocketIo(server, {path: '/api'})
 require('./socket-events').connection(io)
+
+require('./gen-match-query')

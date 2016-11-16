@@ -44,9 +44,7 @@ exports.selectMatchClub = (matchId, clubId) => {
 exports.selectUser = userId => {
   return conn(`
     select
-      l.status,
-      r.recordName,
-      m.matchId
+      *
     from lineup l
     join \`match\` m on m.matchId = l.matchId
     join player p on p.playerId = l.playerId

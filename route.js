@@ -12,6 +12,7 @@ const userModel = require('./model/user')
 
 const joinController = require('./controller/join')
 const statController = require('./controller/stat')
+const fixtureController = require('./controller/fixture')
 
 module.exports = Route
   .post('/login', (req, res, next) => {
@@ -173,3 +174,4 @@ module.exports = Route
   })
   .post('/join', joinController)
   .get('/user-stat/:userId', statController.getUser)
+  .get('/unrecorded-matches/:userId', fixtureController.getUnrecordedMatches)
