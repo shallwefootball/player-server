@@ -175,3 +175,4 @@ module.exports = Route
   .post('/join', joinController)
   .get('/user-stat/:userId', statController.getUser)
   .get('/unrecorded-matches/:userId', fixtureController.getUnrecordedMatches)
+  .get('/league-rank/:leagueId', statController.getLeagueRank)

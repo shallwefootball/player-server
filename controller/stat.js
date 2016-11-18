@@ -1,4 +1,6 @@
 const lineupModel = require('../model/lineup')
+const matchModel = require('../model/match')
+const clubModel = require('../model/club')
 
 
 // lineupModel.selectUser(18)
@@ -41,6 +43,91 @@ exports.getUser = (req, res) => {
     return res.json({
       message: 'success',
       stats: stats
+    })
+  })
+}
+
+exports.getLeagueRank = (req, res) => {
+
+  clubModel.selectExceptTemp(req.params.leagueId)
+  .then(clubs => {
+
+    return Promise.all(clubs.map(club => {
+      return matchModel.selectClubFixture(req.params.leagueId, club.clubId)
+      .then(fixture => {
+        return {
+          clubName: club.teamName,
+          clubId: club.clubId,
+          fixture: fixture
+        }
+      })
+    }))
+  })
+  .then(clubs => {
+
+    clubs = clubs.map(club => {
+
+      const stat = {
+        played: club.fixture.length,
+        points: 0,
+        won: 0,
+        drawn: 0,
+        lost: 0,
+        for: 0,
+        against: 0
+      }
+
+      club.fixture.forEach(match => {
+
+        if(match.homeScore > match.awayScore) {
+          if(match.homeClubId == club.clubId) {
+            //home
+            stat.won++
+            stat.points += 3
+            stat.for += match.homeScore
+            stat.against += match.awayScore
+          }else {
+            //away
+            stat.lost++
+            stat.for += match.awayScore
+            stat.against += match.homeScore
+          }
+        }
+        //drawn
+        if(match.homeScore == match.awayScore) {
+          stat.drawn++
+          stat.points += 1
+          stat.for += match.homeScore
+          stat.against += match.awayScore
+        }
+        if(match.homeScore < match.awayScore) {
+          if(match.homeClubId == club.clubId) {
+            //home
+            stat.lost++
+            stat.for += match.homeScore
+            stat.against += match.awayScore
+          }else {
+            //away
+            stat.won++
+            stat.points += 3
+            stat.for += match.awayScore
+            stat.against += match.homeScore
+          }
+        }
+      })
+
+      stat.different = stat.for - stat.against
+      club.stat = stat
+
+      return club
+    })
+
+    clubs.sort((prev, next) => {
+      return prev.stat.points < next.stat.points
+    })
+    return res.json({
+      message: 'success',
+      ranks: clubs
     })
   })
 }

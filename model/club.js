@@ -27,3 +27,15 @@ exports.selectOne = clubId => {
     })
 }
 
+/**
+ * temp팀을 제외하고 정규리그에 참가한 club를 가져옵니다
+ * @param {int} leagueId
+ */
+exports.selectExceptTemp = leagueId => {
+  return conn(`
+    select * from club c
+    join team t on c.teamId = t.teamId
+    where leagueId = ? and t.isTempTeam is NULL`,
+    leagueId
+  )
+}
