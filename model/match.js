@@ -91,14 +91,6 @@ exports.selectLeague = leagueId => {
         where m.awayClubId = c.clubId
       )
       awayImageS,
-      if (
-        m.kickoffTime < now() and isnull(m.homeScore), 0, m.homeScore
-      )
-      homeScore,
-      if (
-        m.kickoffTime < now() and isnull(m.awayScore), 0, m.awayScore
-      )
-      awayScore,
       m.leagueId,
       m.stadium,
       m.note,
@@ -176,8 +168,6 @@ exports.selectOne = matchId => {
       m.awayClubId,
       (select (select teamName from team t where t.teamId = c.teamId)teamName from club c where m.awayClubId = c.clubId)awayClubName,
       (select (select teamId from team t where t.teamId = c.teamId)teamName from club c where m.awayClubId = c.clubId)awayTeamId,
-      if ( m.kickoffTime < now() and isnull(m.homeScore), 0, m.homeScore) homeScore,
-      if ( m.kickoffTime < now() and isnull(m.awayScore), 0, m.awayScore) awayScore
     from \`match\` m
     where matchId = ?`,
     matchId
@@ -204,7 +194,7 @@ exports.selectClubFixture = (leagueId, clubId) => {
         where (p.clubId = m.awayClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
         or (p.clubId = m.homeClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
         and ma.matchId = m.matchId
-      )hScored,
+      )homeScore,
 
       (
         select
@@ -216,7 +206,7 @@ exports.selectClubFixture = (leagueId, clubId) => {
         where (p.clubId = m.homeClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
         or (p.clubId = m.awayClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
         and ma.matchId = m.matchId
-      )aScored,
+      )awayScore,
 
       m.matchId,
       m.matchName,
@@ -271,14 +261,8 @@ exports.selectClubFixture = (leagueId, clubId) => {
         where m.awayClubId = c.clubId
       )
       awayImageS,
-      if (
-        m.kickoffTime < now() and isnull(m.homeScore), 0, m.homeScore
-      )
-      homeScore,
-      if (
-        m.kickoffTime < now() and isnull(m.awayScore), 0, m.awayScore
-      )
-      awayScore,
+      m.homeGiveup,
+      m.awayGiveup,
       m.leagueId,
       m.stadium,
       m.note,

@@ -79,6 +79,32 @@ exports.getLeagueRank = (req, res) => {
 
       club.fixture.forEach(match => {
 
+        //giveup
+        if(match.homeGiveup) {
+          if(match.homeClubId == club.clubId) {
+            //home
+            stat.lost++
+            stat.against += 3
+          }else {
+            //away
+            stat.won++
+            stat.points += 3
+            stat.for += 3
+          }
+        }
+        if(match.awayGiveup) {
+          if(match.homeClubId == club.clubId) {
+            //home
+            stat.won++
+            stat.points += 3
+            stat.for += 3
+          }else {
+            //away
+            stat.lost++
+            stat.against += 3
+          }
+        }
+
         if(match.homeScore > match.awayScore) {
           if(match.homeClubId == club.clubId) {
             //home
@@ -93,13 +119,17 @@ exports.getLeagueRank = (req, res) => {
             stat.against += match.homeScore
           }
         }
+
         //drawn
-        if(match.homeScore == match.awayScore) {
-          stat.drawn++
-          stat.points += 1
-          stat.for += match.homeScore
-          stat.against += match.awayScore
+        if(!match.homeGiveup && !match.awayGiveup) {
+          if(match.homeScore == match.awayScore) {
+            stat.drawn++
+            stat.points += 1
+            stat.for += match.homeScore
+            stat.against += match.awayScore
+          }
         }
+
         if(match.homeScore < match.awayScore) {
           if(match.homeClubId == club.clubId) {
             //home
