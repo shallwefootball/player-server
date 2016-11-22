@@ -24,7 +24,7 @@ exports.selectLeague = leagueId => {
         where (p.clubId = m.awayClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
         or (p.clubId = m.homeClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
         and ma.matchId = m.matchId
-      )hScored,
+      )homeScore,
 
       (
         select
@@ -36,8 +36,10 @@ exports.selectLeague = leagueId => {
         where (p.clubId = m.homeClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
         or (p.clubId = m.awayClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
         and ma.matchId = m.matchId
-      )aScored,
+      )awayScore,
 
+      m.homeGiveup,
+      m.awayGiveup,
       m.matchId,
       m.matchName,
       m.kickoffTime,
@@ -167,7 +169,7 @@ exports.selectOne = matchId => {
       (select (select teamId from team t where t.teamId = c.teamId)teamName from club c where m.homeClubId = c.clubId)homeTeamId,
       m.awayClubId,
       (select (select teamName from team t where t.teamId = c.teamId)teamName from club c where m.awayClubId = c.clubId)awayClubName,
-      (select (select teamId from team t where t.teamId = c.teamId)teamName from club c where m.awayClubId = c.clubId)awayTeamId,
+      (select (select teamId from team t where t.teamId = c.teamId)teamName from club c where m.awayClubId = c.clubId)awayTeamId
     from \`match\` m
     where matchId = ?`,
     matchId
