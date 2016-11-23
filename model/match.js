@@ -301,7 +301,7 @@ exports.selectClubFixture = (leagueId, clubId) => {
 }
 
 
-exports.selectGroupRank = (clubIds) => {
+exports.selectGroupRank = (leagueId, clubIds) => {
 
   const whereQuery = clubIds.map((clubId, i) => {
     return ` ((mc.homeClubId = ${clubId} or mc.awayClubId = ${clubId}) and c.clubId = ${clubId}) ` + (clubIds.length - 1 != i ? `or` : ``)
@@ -421,11 +421,12 @@ exports.selectGroupRank = (clubIds) => {
           m.giveupNote
         from \`match\` m
         where m.matchName not in ('대체경기')
+        and m.leagueId = ?
 
       )as mc,
       club c
     where ${whereQuery}
     group by c.clubId
     order by points desc
-  `)
+  `, leagueId)
 }

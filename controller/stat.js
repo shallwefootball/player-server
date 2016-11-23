@@ -49,9 +49,11 @@ exports.getUser = (req, res) => {
 
 exports.getLeagueRank = (req, res) => {
 
-  clubModel.select(req.params.leagueId)
+  const leagueId = req.params.leagueId
+
+  clubModel.select(leagueId)
   .then(clubs => (clubs.map(club => (club.clubId))))
-  .then(clubIds => (matchModel.selectGroupRank(clubIds)))
+  .then(clubIds => (matchModel.selectGroupRank(leagueId, clubIds)))
   .then(ranks => {
     return res.json({
       message: 'success',
