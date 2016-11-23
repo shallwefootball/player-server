@@ -14,30 +14,40 @@ exports.selectLeague = leagueId => {
   return conn(
     `select
       concat("#", @RNUM := @RNUM + 1) AS rownum,
-      (
-        select
-          count(recordName)score
-        from lineup l
-        join record r on l.lineupId = r.lineupId
-        join \`match\` ma on ma.matchId = l.matchId
-        join player p on l.playerId = p.playerId
-        where (p.clubId = m.awayClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
-        or (p.clubId = m.homeClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
-        and ma.matchId = m.matchId
+      if(m.homeGiveup, 0,
+        (
+          if (m.awayGiveup, 3,
+              (
+                  select
+                    count(recordName)score
+                  from lineup l
+                  join record r on l.lineupId = r.lineupId
+                  join \`match\` ma on ma.matchId = l.matchId
+                  join player p on l.playerId = p.playerId
+                  where (p.clubId = m.awayClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
+                  or (p.clubId = m.homeClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
+                  and ma.matchId = m.matchId
+                )
+          )
+        )
       )homeScore,
-
-      (
-        select
-          count(recordName)score
-        from lineup l
-        join record r on l.lineupId = r.lineupId
-        join \`match\` ma on ma.matchId = l.matchId
-        join player p on l.playerId = p.playerId
-        where (p.clubId = m.homeClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
-        or (p.clubId = m.awayClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
-        and ma.matchId = m.matchId
+      if(m.awayGiveup, 0,
+        (
+          if (m.homeGiveup, 3,
+              (
+                  select
+                    count(recordName)score
+                  from lineup l
+                  join record r on l.lineupId = r.lineupId
+                  join \`match\` ma on ma.matchId = l.matchId
+                  join player p on l.playerId = p.playerId
+                  where (p.clubId = m.homeClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
+                  or (p.clubId = m.awayClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
+                  and ma.matchId = m.matchId
+                )
+          )
+        )
       )awayScore,
-
       m.homeGiveup,
       m.awayGiveup,
       m.matchId,
@@ -186,30 +196,40 @@ exports.selectClubFixture = (leagueId, clubId) => {
   return conn(`
     select
       concat("#", @RNUM := @RNUM + 1) AS rownum,
-      (
-        select
-          count(recordName)score
-        from lineup l
-        join record r on l.lineupId = r.lineupId
-        join \`match\` ma on ma.matchId = l.matchId
-        join player p on l.playerId = p.playerId
-        where (p.clubId = m.awayClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
-        or (p.clubId = m.homeClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
-        and ma.matchId = m.matchId
+      if(m.homeGiveup, 0,
+        (
+          if (m.awayGiveup, 3,
+              (
+                  select
+                    count(recordName)score
+                  from lineup l
+                  join record r on l.lineupId = r.lineupId
+                  join \`match\` ma on ma.matchId = l.matchId
+                  join player p on l.playerId = p.playerId
+                  where (p.clubId = m.awayClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
+                  or (p.clubId = m.homeClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
+                  and ma.matchId = m.matchId
+                )
+          )
+        )
       )homeScore,
-
-      (
-        select
-          count(recordName)score
-        from lineup l
-        join record r on l.lineupId = r.lineupId
-        join \`match\` ma on ma.matchId = l.matchId
-        join player p on l.playerId = p.playerId
-        where (p.clubId = m.homeClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
-        or (p.clubId = m.awayClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
-        and ma.matchId = m.matchId
+      if(m.awayGiveup, 0,
+        (
+          if (m.homeGiveup, 3,
+              (
+                  select
+                    count(recordName)score
+                  from lineup l
+                  join record r on l.lineupId = r.lineupId
+                  join \`match\` ma on ma.matchId = l.matchId
+                  join player p on l.playerId = p.playerId
+                  where (p.clubId = m.homeClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
+                  or (p.clubId = m.awayClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
+                  and ma.matchId = m.matchId
+                )
+          )
+        )
       )awayScore,
-
       m.matchId,
       m.matchName,
       m.kickoffTime,
