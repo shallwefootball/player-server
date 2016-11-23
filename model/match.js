@@ -105,7 +105,7 @@ exports.selectLeague = leagueId => {
       awayImageS,
       m.leagueId,
       m.stadium,
-      m.note,
+      m.giveupNote,
       m.link,
       m.friendlyMatchId
     from \`match\` m, ( SELECT @RNUM := 0 ) R
@@ -140,7 +140,7 @@ exports.selectWill = (leagueId, clubId) => {
         and m.matchId not in
           (select m.matchId from lineup l, \`match\` m, player p where l.playerId = p.playerId and l.matchId = m.matchId and p.clubId = ?)
         and l.leagueId = ?
-        and m.note is null
+        and m.giveupNote is null
       order by kickoffTime
     `,
     [clubId, clubId, clubId, leagueId]
@@ -287,7 +287,7 @@ exports.selectClubFixture = (leagueId, clubId) => {
       m.awayGiveup,
       m.leagueId,
       m.stadium,
-      m.note,
+      m.giveupNote,
       m.link,
       m.friendlyMatchId
     from \`match\` m, ( SELECT @RNUM := 0 ) R
@@ -298,4 +298,134 @@ exports.selectClubFixture = (leagueId, clubId) => {
   `,
   [leagueId, clubId, clubId])
 
+}
+
+
+exports.selectGroupRank = (clubIds) => {
+
+  const whereQuery = clubIds.map((clubId, i) => {
+    return ` ((mc.homeClubId = ${clubId} or mc.awayClubId = ${clubId}) and c.clubId = ${clubId}) ` + (clubIds.length - 1 != i ? `or` : ``)
+  }).join('')
+
+  return conn(`
+    select
+     c.clubId,
+    (select teamName from team t where t.teamId = c.teamId) teamName,
+    sum(if(isnull(mc.firstHalfTime) and isnull(mc.giveupNote), 0, 1)) played,
+    sum(case
+         when ((c.clubId = mc.homeClubId) and mc.homeScore > mc.awayScore)
+              then 3
+         when ((c.clubId = mc.awayClubId) and mc.awayScore > mc.homeScore)
+              then 3
+         when (mc.homeScore = mc.awayScore)
+              then 1
+         else 0 end) points,
+    sum(if(
+         (
+              ((c.clubId = mc.homeClubId)
+                   and (mc.homeScore > mc.awayScore))
+              or
+              ((c.clubId = mc.awayClubId)
+                   and (mc.awayScore > mc.homeScore))
+         ),
+         1, 0)) won,
+    sum(case
+         when (not(isnull(mc.firstHalfTime) and isnull(mc.giveupNote)) and mc.homeScore = mc.awayScore)
+                   then 1
+              else 0 end) drawn,
+    sum(case
+         when ((c.clubId = mc.homeClubId) and (mc.homeScore < mc.awayScore))
+              then 1
+         when ((c.clubId = mc.awayClubId) and (mc.awayScore < mc.homeScore))
+              then 1
+         else 0 end) lost,
+    sum(case
+         when (c.clubId = mc.homeClubId)
+              then mc.homeScore
+         when (c.clubId = mc.awayClubId)
+              then mc.awayScore
+         when (not(isnull(mc.firstHalfTime) and isnull(mc.giveupNote)) and mc.homeScore = mc.awayScore)
+              then mc.homeScore
+         else 0 end) \`for\`,
+    sum(case
+         when (c.clubId = mc.homeClubId)
+              then mc.awayScore
+         when (c.clubId = mc.awayClubId)
+              then mc.homeScore
+         when (not(isnull(mc.firstHalfTime) and isnull(mc.giveupNote)) and mc.homeScore = mc.awayScore)
+              then mc.homeScore
+         else 0 end) \`against\`,
+    sum((
+         (
+              case
+                   when (c.clubId = mc.homeClubId)
+                        then mc.homeScore
+                   when (c.clubId = mc.awayClubId)
+                        then mc.awayScore
+                   when (not(isnull(mc.firstHalfTime) and isnull(mc.giveupNote)) and mc.homeScore = mc.awayScore)
+                        then mc.homeScore
+                   else 0 end
+         )
+         -
+         (
+              case
+                   when (c.clubId = mc.homeClubId)
+                        then mc.awayScore
+                   when (c.clubId = mc.awayClubId)
+                        then mc.homeScore
+                   when (not(isnull(mc.firstHalfTime) and isnull(mc.giveupNote)) and mc.homeScore = mc.awayScore)
+                        then mc.homeScore
+                   else 0 end
+         )
+    )) different
+    from
+      (
+        select
+          if(m.homeGiveup, 0,
+            (
+              if (m.awayGiveup, 3,
+                  (
+                      select
+                        count(recordName)score
+                      from lineup l
+                      join record r on l.lineupId = r.lineupId
+                      join \`match\` ma on ma.matchId = l.matchId
+                      join player p on l.playerId = p.playerId
+                      where (p.clubId = m.awayClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
+                      or (p.clubId = m.homeClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
+                      and ma.matchId = m.matchId
+                    )
+              )
+            )
+          )homeScore,
+          if(m.awayGiveup, 0,
+            (
+              if (m.homeGiveup, 3,
+                  (
+                      select
+                        count(recordName)score
+                      from lineup l
+                      join record r on l.lineupId = r.lineupId
+                      join \`match\` ma on ma.matchId = l.matchId
+                      join player p on l.playerId = p.playerId
+                      where (p.clubId = m.homeClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
+                      or (p.clubId = m.awayClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
+                      and ma.matchId = m.matchId
+                    )
+              )
+            )
+          )awayScore,
+          m.homeClubId,
+          m.awayClubId,
+          m.firstHalfTime,
+          m.giveupNote
+        from \`match\` m
+        where m.matchName not in ('대체경기')
+
+      )as mc,
+      club c
+    where ${whereQuery}
+    group by c.clubId
+    order by points desc
+  `)
 }
