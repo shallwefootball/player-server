@@ -1,7 +1,9 @@
 {
   "source": {
     "include": [
-      "./model/match.js"
+      "./model/league.js",
+      "./model/match.js",
+      "./model/non/rank.js"
     ]
   },
   "opts": {

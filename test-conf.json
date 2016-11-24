@@ -1,0 +1,8 @@
+{
+  "verbose": true,
+  "bail": true,
+  "testPathIgnorePatterns": [
+    "/node_modules/",
+    "<rootDir>/__tests__/league"
+  ]
+}
