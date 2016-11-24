@@ -56,8 +56,6 @@ exports.getLeagueRank = (req, res) => {
   .then(clubIds => (rankNonModel.selectGroup(leagueId, clubIds)))
   .then(ranks => {
 
-    console.log('ranks   : ', ranks)
-
     return res.json({
       message: 'success',
       ranks: ranks
