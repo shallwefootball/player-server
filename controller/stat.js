@@ -1,5 +1,5 @@
 const lineupModel = require('../model/lineup')
-const matchModel = require('../model/match')
+const rankNonModel = require('../model/non/rank')
 const clubModel = require('../model/club')
 
 
@@ -53,8 +53,11 @@ exports.getLeagueRank = (req, res) => {
 
   clubModel.select(leagueId)
   .then(clubs => (clubs.map(club => (club.clubId))))
-  .then(clubIds => (matchModel.selectGroupRank(leagueId, clubIds)))
+  .then(clubIds => (rankNonModel.selectGroup(leagueId, clubIds)))
   .then(ranks => {
+
+    console.log('ranks   : ', ranks)
+
     return res.json({
       message: 'success',
       ranks: ranks

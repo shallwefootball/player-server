@@ -1,13 +1,14 @@
 const conn = require('./conn')
 
 /**
- * Match Model module.
- * @module matchModel
+ * match table을 컨트롤합니다.
+ * @module MatchModel
  */
 
 /**
  * 리그id값으로 id값에 해당하는 리그의 모든 매치를 가져옵니다.
  * @param {int} leagueId
+ * @return {Array<Object>} matches
  */
 exports.selectLeague = leagueId => {
 
@@ -114,12 +115,11 @@ exports.selectLeague = leagueId => {
   )
 }
 
-
-
 /**
- * teamId로 해당하는 팀의 경기중 진행해야하는 경기를 가져옵니다.
+ * clubId로 해당하는 팀의 경기중 진행해야 할 경기를 가져옵니다.
  * @param {int} leagueId
  * @param {int} clubId
+ * @return {Array<Object>} matches
  */
 exports.selectWill = (leagueId, clubId) => {
   return conn(`
@@ -150,6 +150,7 @@ exports.selectWill = (leagueId, clubId) => {
 /**
  * matchId로 1개 경기를 가져옵니다.
  * @param {int} matchId
+ * @return {Object} match
  */
 exports.selectOne = matchId => {
   return conn(
@@ -187,246 +188,4 @@ exports.selectOne = matchId => {
     .then(matches => {
       return matches[0]
     })
-}
-
-
-exports.selectClubFixture = (leagueId, clubId) => {
-
-
-  return conn(`
-    select
-      concat("#", @RNUM := @RNUM + 1) AS rownum,
-      if(m.homeGiveup, 0,
-        (
-          if (m.awayGiveup, 3,
-              (
-                  select
-                    count(recordName)score
-                  from lineup l
-                  join record r on l.lineupId = r.lineupId
-                  join \`match\` ma on ma.matchId = l.matchId
-                  join player p on l.playerId = p.playerId
-                  where (p.clubId = m.awayClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
-                  or (p.clubId = m.homeClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
-                  and ma.matchId = m.matchId
-                )
-          )
-        )
-      )homeScore,
-      if(m.awayGiveup, 0,
-        (
-          if (m.homeGiveup, 3,
-              (
-                  select
-                    count(recordName)score
-                  from lineup l
-                  join record r on l.lineupId = r.lineupId
-                  join \`match\` ma on ma.matchId = l.matchId
-                  join player p on l.playerId = p.playerId
-                  where (p.clubId = m.homeClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
-                  or (p.clubId = m.awayClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
-                  and ma.matchId = m.matchId
-                )
-          )
-        )
-      )awayScore,
-      m.matchId,
-      m.matchName,
-      m.kickoffTime,
-      m.homeClubId,
-      (
-        select (select teamId from team t where t.teamId = c.teamId)teamName
-        from club c
-        where m.homeClubId = c.clubId
-      )
-      homeTeamId,
-      (
-        select (select teamName from team t where t.teamId = c.teamId)teamName
-        from club c
-        where m.homeClubId = c.clubId
-      )
-      homeClubName,
-      (
-        select (
-          select (
-            select fileName from teamImage ti where ti.teamId = t.teamId
-          )
-          from team t
-          where t.teamId = c.teamId
-        )
-        from club c
-        where m.homeClubId = c.clubId
-      )
-      homeImageS,
-      m.awayClubId,
-      (
-        select (select teamName from team t where t.teamId = c.teamId)teamName
-        from club c
-        where m.awayClubId = c.clubId
-      )
-      awayClubName,
-      (
-        select (select teamId from team t where t.teamId = c.teamId)teamName
-        from club c
-        where m.awayClubId = c.clubId
-      )
-      awayTeamId,
-      (
-        select (
-          select (
-            select fileName from teamImage ti where ti.teamId = t.teamId
-          )
-          from team t
-          where t.teamId = c.teamId
-        )
-        from club c
-        where m.awayClubId = c.clubId
-      )
-      awayImageS,
-      m.homeGiveup,
-      m.awayGiveup,
-      m.leagueId,
-      m.stadium,
-      m.giveupNote,
-      m.link,
-      m.friendlyMatchId
-    from \`match\` m, ( SELECT @RNUM := 0 ) R
-    where m.leagueId = ?
-    and m.matchName not in ('대체경기')
-    and (m.homeClubId = ? or m.awayClubId = ?)
-    order by kickoffTime
-  `,
-  [leagueId, clubId, clubId])
-
-}
-
-
-exports.selectGroupRank = (leagueId, clubIds) => {
-
-  const whereQuery = clubIds.map((clubId, i) => {
-    return ` ((mc.homeClubId = ${clubId} or mc.awayClubId = ${clubId}) and c.clubId = ${clubId}) ` + (clubIds.length - 1 != i ? `or` : ``)
-  }).join('')
-
-  return conn(`
-    select
-     c.clubId,
-    (select teamName from team t where t.teamId = c.teamId) teamName,
-    sum(if(isnull(mc.firstHalfTime) and isnull(mc.giveupNote), 0, 1)) played,
-    sum(case
-         when ((c.clubId = mc.homeClubId) and mc.homeScore > mc.awayScore)
-              then 3
-         when ((c.clubId = mc.awayClubId) and mc.awayScore > mc.homeScore)
-              then 3
-         when (mc.homeScore = mc.awayScore)
-              then 1
-         else 0 end) points,
-    sum(if(
-         (
-              ((c.clubId = mc.homeClubId)
-                   and (mc.homeScore > mc.awayScore))
-              or
-              ((c.clubId = mc.awayClubId)
-                   and (mc.awayScore > mc.homeScore))
-         ),
-         1, 0)) won,
-    sum(case
-         when (not(isnull(mc.firstHalfTime) and isnull(mc.giveupNote)) and mc.homeScore = mc.awayScore)
-                   then 1
-              else 0 end) drawn,
-    sum(case
-         when ((c.clubId = mc.homeClubId) and (mc.homeScore < mc.awayScore))
-              then 1
-         when ((c.clubId = mc.awayClubId) and (mc.awayScore < mc.homeScore))
-              then 1
-         else 0 end) lost,
-    sum(case
-         when (c.clubId = mc.homeClubId)
-              then mc.homeScore
-         when (c.clubId = mc.awayClubId)
-              then mc.awayScore
-         when (not(isnull(mc.firstHalfTime) and isnull(mc.giveupNote)) and mc.homeScore = mc.awayScore)
-              then mc.homeScore
-         else 0 end) \`for\`,
-    sum(case
-         when (c.clubId = mc.homeClubId)
-              then mc.awayScore
-         when (c.clubId = mc.awayClubId)
-              then mc.homeScore
-         when (not(isnull(mc.firstHalfTime) and isnull(mc.giveupNote)) and mc.homeScore = mc.awayScore)
-              then mc.homeScore
-         else 0 end) \`against\`,
-    sum((
-         (
-              case
-                   when (c.clubId = mc.homeClubId)
-                        then mc.homeScore
-                   when (c.clubId = mc.awayClubId)
-                        then mc.awayScore
-                   when (not(isnull(mc.firstHalfTime) and isnull(mc.giveupNote)) and mc.homeScore = mc.awayScore)
-                        then mc.homeScore
-                   else 0 end
-         )
-         -
-         (
-              case
-                   when (c.clubId = mc.homeClubId)
-                        then mc.awayScore
-                   when (c.clubId = mc.awayClubId)
-                        then mc.homeScore
-                   when (not(isnull(mc.firstHalfTime) and isnull(mc.giveupNote)) and mc.homeScore = mc.awayScore)
-                        then mc.homeScore
-                   else 0 end
-         )
-    )) different
-    from
-      (
-        select
-          if(m.homeGiveup, 0,
-            (
-              if (m.awayGiveup, 3,
-                  (
-                      select
-                        count(recordName)score
-                      from lineup l
-                      join record r on l.lineupId = r.lineupId
-                      join \`match\` ma on ma.matchId = l.matchId
-                      join player p on l.playerId = p.playerId
-                      where (p.clubId = m.awayClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
-                      or (p.clubId = m.homeClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
-                      and ma.matchId = m.matchId
-                    )
-              )
-            )
-          )homeScore,
-          if(m.awayGiveup, 0,
-            (
-              if (m.homeGiveup, 3,
-                  (
-                      select
-                        count(recordName)score
-                      from lineup l
-                      join record r on l.lineupId = r.lineupId
-                      join \`match\` ma on ma.matchId = l.matchId
-                      join player p on l.playerId = p.playerId
-                      where (p.clubId = m.homeClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
-                      or (p.clubId = m.awayClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
-                      and ma.matchId = m.matchId
-                    )
-              )
-            )
-          )awayScore,
-          m.homeClubId,
-          m.awayClubId,
-          m.firstHalfTime,
-          m.giveupNote
-        from \`match\` m
-        where m.matchName not in ('대체경기')
-        and m.leagueId = ?
-
-      )as mc,
-      club c
-    where ${whereQuery}
-    group by c.clubId
-    order by points desc
-  `, leagueId)
 }
