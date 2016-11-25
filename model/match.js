@@ -158,12 +158,46 @@ exports.selectOne = matchId => {
       m.matchName,
       m.kickoffTime,
       m.stadium,
-      hour(m.firstHalfTime) firstHalfHour,
-      date_format(m.firstHalfTime, "%i") firstHalfMinute,
+      m.firstHalfTime,
       m.firstHalfAdditional,
-      hour(m.secondHalfTime) secondHalfHour,
-      date_format(m.secondHalfTime, "%i") secondHalfMinute,
+      m.secondHalfTime,
       m.secondHalfAdditional,
+      if(m.homeGiveup, 0,
+        (
+          if (m.awayGiveup, 3,
+              (
+                  select
+                    count(recordName)score
+                  from lineup l
+                  join record r on l.lineupId = r.lineupId
+                  join \`match\` ma on ma.matchId = l.matchId
+                  join player p on l.playerId = p.playerId
+                  where (p.clubId = m.awayClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
+                  or (p.clubId = m.homeClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
+                  and ma.matchId = m.matchId
+                )
+          )
+        )
+      )homeScore,
+      if(m.awayGiveup, 0,
+        (
+          if (m.homeGiveup, 3,
+              (
+                  select
+                    count(recordName)score
+                  from lineup l
+                  join record r on l.lineupId = r.lineupId
+                  join \`match\` ma on ma.matchId = l.matchId
+                  join player p on l.playerId = p.playerId
+                  where (p.clubId = m.homeClubId and recordName = 'ownGoal' and ma.matchId = m.matchId)
+                  or (p.clubId = m.awayClubId and (r.recordName = 'goalScored' or r.recordName = 'penaltyScored'))
+                  and ma.matchId = m.matchId
+                )
+          )
+        )
+      )awayScore,
+      m.homeGiveup,
+      m.awayGiveup,
       m.sky,
       m.temperature,
       m.humidity,
@@ -184,7 +218,19 @@ exports.selectOne = matchId => {
     where matchId = ?`,
     matchId
   )
-    .then(matches => {
-      return matches[0]
-    })
+  .then(matches => {
+    return matches[0]
+  })
+}
+
+
+/**
+ * 모든 match ID(int) 를 가져옵니다. (for test)
+ * @return {Array<Int>} match IDs
+ */
+exports.selectId = () => {
+  return conn(`select * from \`match\``)
+  .then(matches => {
+    return matches.map(match => (match.matchId))
+  })
 }

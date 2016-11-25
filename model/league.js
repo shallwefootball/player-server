@@ -21,7 +21,7 @@ exports.select = () => {
 }
 
 /**
- * 모든 league ID(int) 를 가져옵니다.
+ * 모든 league ID(int) 를 가져옵니다. (for test)
  * @return {Array<Int>} league IDs
  */
 exports.selectId = () => {

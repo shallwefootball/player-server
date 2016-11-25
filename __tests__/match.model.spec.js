@@ -6,10 +6,11 @@ const TEMP_LEAGUE_ID_FOR_WILL = 6
 
 describe('matchModel', () => {
   const keys = Object.keys(matchModel)
-  it('api의 갯수는 3 이다.', () => (expect(keys.length).toEqual(3)))
+  it('api의 갯수는 4 이다.', () => (expect(keys.length).toEqual(4)))
   it('selectLeague 가 포함 되어있다.', () => (expect(keys).toContain('selectLeague')))
   it('selectWill 가 포함 되어있다.', () => (expect(keys).toContain('selectWill')))
   it('selectOne 가 포함 되어있다.', () => (expect(keys).toContain('selectOne')))
+  it('selectId 가 포함 되어있다.', () => (expect(keys).toContain('selectId')))
 })
 
 
@@ -117,6 +118,69 @@ describe('matchModel.selectWill', () => {
       it('homeClubName 가 포함 되어있다.', () => (expect(keys).toContain('homeClubName')))
       it('awayClubId 가 포함 되어있다.', () => (expect(keys).toContain('awayClubId')))
       it('awayClubName 가 포함 되어있다.', () => (expect(keys).toContain('awayClubName')))
+
+    })
+  })
+})
+
+
+describe('matchModel.selectOne', () => {
+
+  describe('임의의 matchId를 인자로 받아', () => {
+    let randomIndex;
+    let matchId;
+    beforeAll(() => {
+      return matchModel.selectId().then(matchIds => {
+        randomIndex = (Math.random() * (matchIds.length - 1)).toFixed()
+        matchId = matchIds[randomIndex]
+      })
+    })
+
+    it('객체를 리턴한다.',  () => {
+      return matchModel.selectOne(matchId)
+      .then(match => {
+        expect(_.isObject(match)).toBeTruthy()
+      })
+    })
+
+    describe('경기의 속성은', () => {
+      let keys;
+      beforeAll(() => {
+        return matchModel.selectOne(matchId)
+        .then(match => {
+          keys = Object.keys(match)
+        })
+      })
+
+      it('갯수는 28 이다.', () => (expect(keys.length).toEqual(28)))
+      it('matchId 가 포함 되어있다.', () => (expect(keys).toContain('matchId')))
+      it('matchName 가 포함 되어있다.', () => (expect(keys).toContain('matchName')))
+      it('kickoffTime 가 포함 되어있다.', () => (expect(keys).toContain('kickoffTime')))
+      it('stadium 가 포함 되어있다.', () => (expect(keys).toContain('stadium')))
+      it('firstHalfTime 가 포함 되어있다.', () => (expect(keys).toContain('firstHalfTime')))
+      it('firstHalfAdditional 가 포함 되어있다.', () => (expect(keys).toContain('firstHalfAdditional')))
+      it('secondHalfTime 가 포함 되어있다.', () => (expect(keys).toContain('secondHalfTime')))
+      it('secondHalfAdditional 가 포함 되어있다.', () => (expect(keys).toContain('secondHalfAdditional')))
+      it('homeScore 가 포함 되어있다.', () => (expect(keys).toContain('homeScore')))
+      it('awayScore 가 포함 되어있다.', () => (expect(keys).toContain('awayScore')))
+      it('homeGiveup 가 포함 되어있다.', () => (expect(keys).toContain('homeGiveup')))
+      it('awayGiveup 가 포함 되어있다.', () => (expect(keys).toContain('awayGiveup')))
+      it('sky 가 포함 되어있다.', () => (expect(keys).toContain('sky')))
+      it('temperature 가 포함 되어있다.', () => (expect(keys).toContain('temperature')))
+      it('humidity 가 포함 되어있다.', () => (expect(keys).toContain('humidity')))
+      it('wind 가 포함 되어있다.', () => (expect(keys).toContain('wind')))
+      it('refereeHead 가 포함 되어있다.', () => (expect(keys).toContain('refereeHead')))
+      it('refereeAssistant1 가 포함 되어있다.', () => (expect(keys).toContain('refereeAssistant1')))
+      it('refereeAssistant2 가 포함 되어있다.', () => (expect(keys).toContain('refereeAssistant2')))
+      it('refereeFourth 가 포함 되어있다.', () => (expect(keys).toContain('refereeFourth')))
+      it('homeCoach 가 포함 되어있다.', () => (expect(keys).toContain('homeCoach')))
+      it('awayCoach 가 포함 되어있다.', () => (expect(keys).toContain('awayCoach')))
+      it('homeClubId 가 포함 되어있다.', () => (expect(keys).toContain('homeClubId')))
+      it('homeClubName 가 포함 되어있다.', () => (expect(keys).toContain('homeClubName')))
+      it('homeTeamId 가 포함 되어있다.', () => (expect(keys).toContain('homeTeamId')))
+      it('awayClubId 가 포함 되어있다.', () => (expect(keys).toContain('awayClubId')))
+      it('awayClubName 가 포함 되어있다.', () => (expect(keys).toContain('awayClubName')))
+      it('awayTeamId 가 포함 되어있다.', () => (expect(keys).toContain('awayTeamId')))
 
     })
   })
