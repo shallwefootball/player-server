@@ -132,8 +132,7 @@ exports.selectWill = (leagueId, clubId) => {
         m.homeClubId,
         (select (select teamName from team t where t.teamId = c.teamId)teamName from club c where m.homeClubId = c.clubId)homeClubName,
         m.awayClubId,
-        (select (select teamName from team t where t.teamId = c.teamId)teamName from club c where m.awayClubId = c.clubId)awayClubName,
-        note
+        (select (select teamName from team t where t.teamId = c.teamId)teamName from club c where m.awayClubId = c.clubId)awayClubName
       from \`match\` m, league l
       where (m.homeClubId = ? or m.awayClubId = ?)
         and m.leagueId = l.leagueId
