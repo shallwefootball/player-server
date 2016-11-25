@@ -2,5 +2,5 @@ node_modules
 out
 yarn.lock
 config.js
-npm-debug.log
+npm-debug.log.*
 docs

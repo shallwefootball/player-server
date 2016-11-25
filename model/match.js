@@ -14,7 +14,7 @@ exports.selectLeague = leagueId => {
 
   return conn(
     `select
-      concat("#", @RNUM := @RNUM + 1) AS rownum,
+      concat("#", @RNUM := @RNUM + 1) rownum,
       if(m.homeGiveup, 0,
         (
           if (m.awayGiveup, 3,
@@ -109,7 +109,7 @@ exports.selectLeague = leagueId => {
       m.giveupNote,
       m.link,
       m.friendlyMatchId
-    from \`match\` m, ( SELECT @RNUM := 0 ) R
+    from \`match\` m, ( SELECT @RNUM := 0 ) r
     where m.leagueId = ? order by kickoffTime`,
     leagueId
   )
@@ -125,10 +125,10 @@ exports.selectWill = (leagueId, clubId) => {
   return conn(`
       select
         m.matchId,
-          m.matchName,
+        m.matchName,
         l.community,
         l.season,
-          m.kickoffTime,
+        m.kickoffTime,
         m.homeClubId,
         (select (select teamName from team t where t.teamId = c.teamId)teamName from club c where m.homeClubId = c.clubId)homeClubName,
         m.awayClubId,
