@@ -10,7 +10,7 @@ const conn = require('./conn')
  * @param {int} leagueId
  * @return {Array<Object>} matches
  */
-exports.selectLeague = leagueId => {
+exports.select = leagueId => {
 
   return conn(
     `select

@@ -7,14 +7,14 @@ const TEMP_LEAGUE_ID_FOR_WILL = 6
 describe('matchModel', () => {
   const keys = Object.keys(matchModel)
   it('api의 갯수는 4 이다.', () => (expect(keys.length).toEqual(4)))
-  it('selectLeague 가 포함 되어있다.', () => (expect(keys).toContain('selectLeague')))
+  it('select 가 포함 되어있다.', () => (expect(keys).toContain('select')))
   it('selectWill 가 포함 되어있다.', () => (expect(keys).toContain('selectWill')))
   it('selectOne 가 포함 되어있다.', () => (expect(keys).toContain('selectOne')))
   it('selectId 가 포함 되어있다.', () => (expect(keys).toContain('selectId')))
 })
 
 
-describe('matchModel.selectLeague', () => {
+describe('matchModel.select', () => {
   describe('임의의 leagueId를 인자로 받아', () => {
     let randomIndex;
     let leagueId;
@@ -25,13 +25,13 @@ describe('matchModel.selectLeague', () => {
       })
     })
     it('배열을 리턴한다.',  () => {
-      return matchModel.selectLeague(leagueId)
+      return matchModel.select(leagueId)
       .then(matches => {
         expect(_.isArray(matches)).toBeTruthy()
       })
     })
     it('각각 인덱스는 객체리터럴이다.',  () => {
-      return matchModel.selectLeague(leagueId)
+      return matchModel.select(leagueId)
       .then(matches => {
         expect(matches.every(match => {
           return _.isObject(match)
@@ -42,7 +42,7 @@ describe('matchModel.selectLeague', () => {
     describe('경기의 속성은', () => {
       let keys;
       beforeAll(() => {
-        return matchModel.selectLeague(leagueId)
+        return matchModel.select(leagueId)
         .then(matches => {
           keys = Object.keys(matches[0])
         })
