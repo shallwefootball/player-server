@@ -21,7 +21,7 @@ exports.select = () => {
 }
 
 /**
- * 모든 league ID(int) 를 가져옵니다. (for test)
+ * 과거에 치르어 졌던 모든 league ID(int) 를 가져옵니다. (for test)
  * @return {Array<Int>} league IDs
  */
 exports.selectId = () => {
@@ -30,6 +30,7 @@ exports.selectId = () => {
     where community = "여주"
     and season IS NOT NULL
     and type = 'league'
+    and start < now()
     order by start desc
   `)
   .then(leagues => {
