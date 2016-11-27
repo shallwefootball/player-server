@@ -3,6 +3,7 @@
   "bail": true,
   "testPathIgnorePatterns": [
     "/node_modules/",
-    "<rootDir>/__tests__/league"
+    "<rootDir>/__tests__/league",
+    "<rootDir>/__tests__/match"
   ]
 }
