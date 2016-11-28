@@ -1,15 +1,16 @@
 const conn = require('./conn')
 
 /**
- * Match Model module.
- * @module matchModel
+ * Player Model module.
+ * @module playerModel
  */
 
 /**
  * clubId로 선수들의 정보를 가져옵니다.
  * @param {int} clubId
+ * @return {Array<Object>} 선수들
  */
-exports.selectClub = clubId => {
+exports.select = clubId => {
 
   return conn(`
     select
@@ -30,6 +31,15 @@ exports.selectClub = clubId => {
   )
 }
 
+/**
+ * player를 업데이트합니다.
+ * @param {Array<Object>} PlayerInfo 선수정보(Object)가 있는 Array
+ * @param {String} PlayerInfo.userId userId
+ * @param {String} PlayerInfo.clubId clubId
+ * @param {String} PlayerInfo.squadNumber squadNumber
+ * @param {String} PlayerInfo.position position
+ * @param {String} PlayerInfo.orderNumber orderNumber
+ */
 exports.update = (clubId, players) => {
 
   return Promise.all(players.map(player => {
@@ -47,6 +57,7 @@ exports.update = (clubId, players) => {
  * userId, leagueId로 한선수가 리그의 선수을 리턴합니다.
  * @param {int} userId
  * @param {int} leagueId
+ * @return {Object} playerInfo
  */
 exports.selectOneUserLeague = (userId, leagueId) => {
   return conn(`
@@ -60,6 +71,15 @@ exports.selectOneUserLeague = (userId, leagueId) => {
   })
 }
 
+/**
+ * player를 생성합니다.
+ * @param {Object} PlyaerInfo 사용자 정보 Object
+ * @param {String} PlyaerInfo.userId userId
+ * @param {String} PlyaerInfo.clubId clubId
+ * @param {String} PlyaerInfo.squadNumber squadNumber
+ * @param {String} PlyaerInfo.position position
+ * @param {String} PlyaerInfo.orderNumber orderNumber
+ */
 exports.insert = ({userId, clubId, squadNumber, position, orderNumber}) => {
   return conn(`
     insert into player (userId, clubId, squadNumber, position, orderNumber) values (?, ?, ?, ?, ?)`,

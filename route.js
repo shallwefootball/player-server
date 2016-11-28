@@ -69,7 +69,7 @@ module.exports = Route
       })
   })
   .get('/players/:clubId', (req, res) => {
-    playerModel.selectClub(req.params.clubId)
+    playerModel.select(req.params.clubId)
       .then(players => {
         return res.json({players: players})
       })
@@ -116,7 +116,7 @@ module.exports = Route
 
     return Promise.all([
       playerModel.selectOneUserLeague(userId, leagueId),
-      playerModel.selectClub(clubId)
+      playerModel.select(clubId)
     ]).then(values => {
       let player = values[0]
       const players = values[1]
@@ -142,7 +142,7 @@ module.exports = Route
       return newPlayer
     })
     .then(player => (playerModel.insert(player)))
-    .then(() => (playerModel.selectClub(clubId)))
+    .then(() => (playerModel.select(clubId)))
     .then(players => {
       return res.json({players: players})
     })
