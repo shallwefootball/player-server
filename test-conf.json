@@ -4,6 +4,8 @@
   "testPathIgnorePatterns": [
     "/node_modules/",
     "<rootDir>/__tests__/league",
-    "<rootDir>/__tests__/match"
+    "<rootDir>/__tests__/match",
+    "<rootDir>/__tests__/club",
+    "<rootDir>/__tests__/player"
   ]
 }

@@ -14,6 +14,7 @@ exports.select = leagueId => {
 /**
  * clubId로 팀의 정보를 가져옵니다.
  * @param {int} clubId
+ * @return {Array<Object>} clubObjects
  */
 exports.selectOne = clubId => {
   return conn(`
@@ -30,7 +31,7 @@ exports.selectOne = clubId => {
 
 /**
  * club ID(int) 를 가져옵니다. formation이 정의되어있는 clubId를 리턴합니다. (for test)
- * @return {Array<Int>} club IDs
+ * @return {Array<Int>} clubIds
  */
 exports.selectId = () => {
   return conn(`

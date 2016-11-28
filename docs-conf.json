@@ -3,7 +3,8 @@
     "include": [
       "./model/league.js",
       "./model/match.js",
-      "./model/non/rank.js"
+      "./model/non/rank.js",
+      "./model/user.js"
     ]
   },
   "opts": {

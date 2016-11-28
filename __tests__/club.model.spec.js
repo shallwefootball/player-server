@@ -67,7 +67,7 @@ describe('clubModel.selectOne', () => {
       })
     })
 
-    it('JSON객체를 리턴한다.',  () => {
+    it('Object 리터럴 객체를 리턴한다.',  () => {
       return clubModel.selectOne(clubId)
       .then(club => {
         expect(_.isObject(club)).toBeTruthy()
