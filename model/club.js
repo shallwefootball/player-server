@@ -27,15 +27,16 @@ exports.selectOne = clubId => {
     })
 }
 
+
 /**
- * temp팀을 제외하고 정규리그에 참가한 club를 가져옵니다
- * @param {int} leagueId
+ * club ID(int) 를 가져옵니다. formation이 정의되어있는 clubId를 리턴합니다. (for test)
+ * @return {Array<Int>} club IDs
  */
-exports.selectExceptTemp = leagueId => {
+exports.selectId = () => {
   return conn(`
-    select * from club c
-    join team t on c.teamId = t.teamId
-    where leagueId = ? and t.isTempTeam is NULL`,
-    leagueId
-  )
+    select * from club c where c.formation is not null
+  `)
+  .then(clubs => {
+    return(clubs.map(club => (club.clubId)))
+  })
 }

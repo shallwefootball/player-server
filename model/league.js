@@ -6,7 +6,7 @@ const conn = require('./conn')
  */
 
 /**
- * 모든 리그정보를 가져옵니다.
+ * 모든 리그정보를 가져옵니다. null인 시즌은 가져오지 않습니다.
  * @return {Array<Object>} leagues
  */
 exports.select = () => {
