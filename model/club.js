@@ -1,5 +1,16 @@
 const conn = require('./conn')
 
+/**
+ * Club Model module.
+ * @module ClubModel
+ */
+
+
+/**
+ * leagueId롤 모든 팀의 정보를 가져옵니다.
+ * @param {int} leagueId
+ * @return {Array<Object>} clubObjects
+ */
 exports.select = leagueId => {
 
   return conn(`
@@ -14,7 +25,7 @@ exports.select = leagueId => {
 /**
  * clubId로 팀의 정보를 가져옵니다.
  * @param {int} clubId
- * @return {Array<Object>} clubObjects
+ * @return {Object} clubInfo
  */
 exports.selectOne = clubId => {
   return conn(`

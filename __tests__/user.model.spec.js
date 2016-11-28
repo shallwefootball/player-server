@@ -1,9 +1,7 @@
 const _ = require('lodash')
 const userModel = require('../model/user')
 const modelUtil = require('../model/util')
-const SELECT_EMAIL = 'drogvory@gmail.com'
-const TEST_EMAIL = 'test@swfb.com'
-const CHAR = '김'
+const CONST = require('../constraint').test
 
 describe('userModel', () => {
   const keys = Object.keys(userModel)
@@ -19,7 +17,7 @@ describe('userModel.selectOne', () => {
   describe('임의의 email를 인자로 받아', () => {
 
     it('Object 리터럴 객체를 리턴한다.',  () => {
-      return userModel.selectOne(SELECT_EMAIL)
+      return userModel.selectOne(CONST.SELECT_EMAIL)
       .then(user => {
         expect(_.isObject(user)).toBeTruthy()
       })
@@ -30,7 +28,7 @@ describe('userModel.selectOne', () => {
 
       let keys;
       beforeAll(() => {
-        return userModel.selectOne(SELECT_EMAIL)
+        return userModel.selectOne(CONST.SELECT_EMAIL)
         .then(user => {
           keys = Object.keys(user)
         })
@@ -54,13 +52,13 @@ describe('userModel.selectChar', () => {
 
 
     it('배열을 리턴한다.',  () => {
-      return userModel.selectChar(CHAR)
+      return userModel.selectChar(CONST.CHAR)
       .then(users => {
         expect(_.isArray(users)).toBeTruthy()
       })
     })
     it('각각 인덱스는 객체리터럴이다.',  () => {
-      return userModel.selectChar(CHAR)
+      return userModel.selectChar(CONST.CHAR)
       .then(users => {
         expect(users.every(user => {
           return _.isObject(user)
@@ -71,7 +69,7 @@ describe('userModel.selectChar', () => {
     describe('선수의 속성은', () => {
       let keys;
       beforeAll(() => {
-        return userModel.selectChar(CHAR)
+        return userModel.selectChar(CONST.CHAR)
         .then(users => {
           keys = Object.keys(users[0])
         })
@@ -89,13 +87,13 @@ describe('userModel.selectChar', () => {
 
 describe('userModel.insert', () => {
   afterAll(() => {
-    return userModel.delete(TEST_EMAIL)
+    return userModel.delete(CONST.NEW_EMAIL)
     .then(res => {
       modelUtil.resetAutoIncrement('user')
     })
   })
   it('user를 생성을 성공한다.', () => {
-    return userModel.insert({email: TEST_EMAIL})
+    return userModel.insert({email: CONST.NEW_EMAIL})
     .then(res => {
       expect(res.affectedRows).toBe(1)
     })
@@ -105,13 +103,13 @@ describe('userModel.insert', () => {
 
 describe('userModel.delete', () => {
   beforeAll(() => {
-    return userModel.insert({email: TEST_EMAIL})
+    return userModel.insert({email: CONST.NEW_EMAIL})
   })
   afterAll(() => {
     return modelUtil.resetAutoIncrement('user')
   })
   it('user를 삭제를 성공한다.', () => {
-    return userModel.delete(TEST_EMAIL)
+    return userModel.delete(CONST.NEW_EMAIL)
     .then(res => {
       expect(res.affectedRows).toBe(1)
     })
