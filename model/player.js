@@ -85,3 +85,7 @@ exports.insert = ({userId, clubId, squadNumber, position, orderNumber}) => {
     insert into player (userId, clubId, squadNumber, position, orderNumber) values (?, ?, ?, ?, ?)`,
     [userId, clubId, squadNumber, position, orderNumber])
 }
+
+exports.delete = playerId => {
+  return conn(`delete from \`player\` where playerId = ? `, playerId)
+}

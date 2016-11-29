@@ -7,11 +7,12 @@ const CONST = require('../constraint').test
 
 describe('playerModel', () => {
   const keys = Object.keys(playerModel)
-  it('api의 갯수는 4 이다.', () => (expect(keys.length).toEqual(4)))
+  it('api의 갯수는 5 이다.', () => (expect(keys.length).toEqual(5)))
   it('select 가 포함 되어있다.', () => (expect(keys).toContain('select')))
   it('update 가 포함 되어있다.', () => (expect(keys).toContain('update')))
   it('selectOneUserLeague 가 포함 되어있다.', () => (expect(keys).toContain('selectOneUserLeague')))
   it('insert 가 포함 되어있다.', () => (expect(keys).toContain('insert')))
+  it('delete 가 포함 되어있다.', () => (expect(keys).toContain('delete')))
 })
 
 describe('playerModel.select', () => {
@@ -105,30 +106,54 @@ describe('playerModel.selectOneUserLeague', () => {
 })
 
 
-// {userId, clubId, squadNumber, position, orderNumber}
 
 describe('player.insert', () => {
   let newUserId;
+  let newClubId;
+  let newPlayerId;
   beforeAll(() => {
     return userModel.insert({email: CONST.NEW_EMAIL})
     .then(res => {
       newUserId = res.insertId
+      return clubModel.insert()
+    })
+    .then(res => {
+      newClubId = res.insertId
     })
   })
   afterAll(() => {
-    return userModel.delete(CONST.NEW_EMAIL)
+    return playerModel.delete(newPlayerId)
+    .then(res => {
+      return modelUtil.resetAutoIncrement('player')
+    })
+    .then(res => {
+      return userModel.delete(CONST.NEW_EMAIL)
+    })
     .then(res => {
       return modelUtil.resetAutoIncrement('user')
     })
+    .then(res => {
+      return clubModel.delete(newClubId)
+    })
+    .then(res => {
+      return modelUtil.resetAutoIncrement('club')
+    })
   })
+
   it('player를 생성을 성공한다.', () => {
-  //   return player.insert({email: TEST_EMAIL})
-  //   .then(res => {
-      expect(2).toBe(1)
-  //   })
+    return playerModel.insert({
+      userId: newUserId,
+      clubId: newClubId,
+      squadNumber: 0,
+      position: 'TMP',
+      orderNumber: 0
+    })
+    .then(res => {
+      newPlayerId = res.insertId
+      return expect(res.affectedRows).toBe(1)
+    })
   })
 })
-
 
 // describe('player.delete', () => {
 //   beforeAll(() => {
