@@ -52,3 +52,11 @@ exports.selectId = () => {
     return(clubs.map(club => (club.clubId)))
   })
 }
+
+exports.insert = () => {
+  return conn(`insert into \`club\` values ()`)
+}
+
+exports.delete = clubId => {
+  return conn(`delete from \`club\` where clubId = ?`, clubId)
+}
