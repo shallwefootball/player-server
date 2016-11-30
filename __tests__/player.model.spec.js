@@ -155,20 +155,50 @@ describe('player.insert', () => {
   })
 })
 
-// describe('player.delete', () => {
-//   beforeAll(() => {
-//     return player.insert({email: TEST_EMAIL})
-//   })
-//   afterAll(() => {
-//     return modelUtil.resetAutoIncrement('user')
-//   })
-//   it('player를 삭제를 성공한다.', () => {
-//     return player.delete(TEST_EMAIL)
-//     .then(res => {
-//       expect(res.affectedRows).toBe(1)
-//     })
-//   })
-// })
+describe('player.delete', () => {
+  let newUserId;
+  let newClubId;
+  let newPlayerId;
+  beforeAll(() => {
+    return userModel.insert({email: CONST.NEW_EMAIL})
+    .then(res => {
+      newUserId = res.insertId
+      return clubModel.insert()
+    })
+    .then(res => {
+      newClubId = res.insertId
+      return playerModel.insert({
+        userId: newUserId,
+        clubId: newClubId,
+        squadNumber: 0,
+        position: 'TMP',
+        orderNumber: 0
+      })
+    })
+    .then(res => {
+      newPlayerId = res.insertId
+    })
+  })
+  afterAll(() => {
+    return clubModel.delete(newClubId)
+    .then(res => {
+      return userModel.delete(CONST.NEW_EMAIL)
+    })
+    .then(res => {
+      return Promise.all([
+        modelUtil.resetAutoIncrement('user'),
+        modelUtil.resetAutoIncrement('club'),
+        modelUtil.resetAutoIncrement('player')
+      ])
+    })
+  })
+  it('player를 삭제를 성공한다.', () => {
+    return playerModel.delete(newPlayerId)
+    .then(res => {
+      expect(res.affectedRows).toBe(1)
+    })
+  })
+})
 
 
 
