@@ -107,7 +107,7 @@ describe('playerModel.selectOneUserLeague', () => {
 
 
 
-describe('player.insert', () => {
+describe('playerModel.insert', () => {
   let newUserId;
   let newClubId;
   let newPlayerId;
@@ -155,7 +155,7 @@ describe('player.insert', () => {
   })
 })
 
-describe('player.delete', () => {
+describe('playerModel.delete', () => {
   let newUserId;
   let newClubId;
   let newPlayerId;
