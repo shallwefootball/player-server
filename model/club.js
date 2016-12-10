@@ -53,6 +53,14 @@ exports.selectId = () => {
   })
 }
 
+/**
+ *
+ *
+ */
+exports.update = club => {
+  return conn(`update club set formation = ? where clubId = ?`, [club.formation, club.clubId])
+}
+
 exports.insert = () => {
   return conn(`insert into \`club\` values ()`)
 }
