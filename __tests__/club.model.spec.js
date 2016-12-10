@@ -4,10 +4,12 @@ const leagueModel = require('../model/league')
 
 describe('clubModel', () => {
   const keys = Object.keys(clubModel)
-  it('api의 갯수는 3 이다.', () => (expect(keys.length).toEqual(3)))
+  it('api의 갯수는 5 이다.', () => (expect(keys.length).toEqual(5)))
   it('select 가 포함 되어있다.', () => (expect(keys).toContain('select')))
   it('selectOne 가 포함 되어있다.', () => (expect(keys).toContain('selectOne')))
   it('selectId 가 포함 되어있다.', () => (expect(keys).toContain('selectId')))
+  it('insert 가 포함 되어있다.', () => (expect(keys).toContain('insert')))
+  it('delete 가 포함 되어있다.', () => (expect(keys).toContain('delete')))
 })
 
 

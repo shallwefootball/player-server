@@ -7,6 +7,8 @@
     "<rootDir>/__tests__/match",
     "<rootDir>/__tests__/club",
     "<rootDir>/__tests__/user",
-    "<rootDir>/__tests__/player"
+    "<rootDir>/__tests__/player",
+    "<rootDir>/__tests__/lineup",
+    "<rootDir>/__tests__/record"
   ]
 }
