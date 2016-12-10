@@ -36,7 +36,7 @@ exports.select = clubId => {
  * @param {Array<Object>} PlayerInfo 선수정보(Object)가 있는 Array
  * @param {String} PlayerInfo.userId userId
  * @param {String} PlayerInfo.clubId clubId
- * @param {String} PlayerInfo.squadNumber squadNumber
+ * @param {String} PlayerInfo.playerId playerId
  * @param {String} PlayerInfo.position position
  * @param {String} PlayerInfo.orderNumber orderNumber
  */
@@ -44,8 +44,8 @@ exports.update = (clubId, players) => {
 
   return Promise.all(players.map(player => {
     return conn(`
-      update player set matchPosition = ?, orderNumber = ?, status = ? where squadNumber = ? and clubId = ?`,
-      [player.matchPosition, player.orderNumber, player.status, player.squadNumber, clubId]
+      update player set matchPosition = ?, orderNumber = ?, status = ? where playerId = ? and clubId = ?`,
+      [player.matchPosition, player.orderNumber, player.status, player.playerId, clubId]
     )
   }))
   .then(values => {
